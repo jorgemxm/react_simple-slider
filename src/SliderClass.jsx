@@ -1,12 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import styled from "styled-components";
-
-const slides = [
-  'https://images.unsplash.com/photo-1449034446853-66c86144b0ad?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2100&q=80',
-  'https://images.unsplash.com/photo-1470341223622-1019832be824?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2288&q=80',
-  'https://images.unsplash.com/photo-1448630360428-65456885c650?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2094&q=80',
-  'https://images.unsplash.com/photo-1534161308652-fdfcf10f62c4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2174&q=80'
-]
+import { slidesData } from './mockData';
 
 export const StyledWrapper = styled.div`
 position: relative;
@@ -75,13 +69,11 @@ align-items: center;
 justify-content: center;
 `;
 
-const Slide = ({ content }) => (
-  <StyledSlide content={content} />
-)
+const Slide = ({ content }) => <StyledSlide content={content} />
 
 const Dots = ({ activeIndex, handleClick }) => (
   <StyledDots>
-    {slides.map((slide, i) => (
+    {slidesData.map((slide, i) => (
       <Dot key={slide} active={activeIndex === i} onClick={() => handleClick(i)} />
     ))}
   </StyledDots>
@@ -90,7 +82,12 @@ const Dots = ({ activeIndex, handleClick }) => (
 const Arrow = ({ direction, handleClick }) =>
   <StyledArrow direction={direction} onClick={handleClick}>{direction === "left" ? "<" : ">"}</StyledArrow>;
 
-class Slider extends Component {
+
+class SliderClass extends React.Component {
+  static defaultProps = {
+    autoPlayTimer: 2000
+  }
+
   constructor(props) {
     super(props);
 
@@ -98,7 +95,7 @@ class Slider extends Component {
       activeIndex: 0,
       translate: this.getWidth(),
       transition: 0.5,
-      slides: [slides[slides.length - 1], slides[0], slides[1]]
+      slides: [slidesData[slidesData.length - 1], slidesData[0], slidesData[1]]
     };
 
     this.prevSlide = this.prevSlide.bind(this);
@@ -108,7 +105,7 @@ class Slider extends Component {
   }
 
   componentDidMount() {
-    this.timer = setInterval(() => { this.nextSlide() }, 3000);
+    this.timer = setInterval(() => { this.nextSlide() }, this.props.autoPlayTimer);
     this.transitionEnd = window.addEventListener('transitionend', this.createSlides);
   }
 
@@ -117,8 +114,8 @@ class Slider extends Component {
     window.removeEventListener('transitionend', this.transitionEnd);
   }
 
-  componentDidUpdate(prevProps, prevState) {
-  }
+  // componentDidUpdate(prevProps, prevState) {
+  // }
 
   getWidth = () => window.innerWidth
 
@@ -127,7 +124,7 @@ class Slider extends Component {
 
     this.setState({
       ...this.state,
-      activeIndex: activeIndex === 0 ? slides.length - 1 : activeIndex - 1,
+      activeIndex: activeIndex === 0 ? slidesData.length - 1 : activeIndex - 1,
       transition: 0.5,
       translate: 0
     });
@@ -135,10 +132,11 @@ class Slider extends Component {
 
   nextSlide() {
     const { activeIndex, translate } = this.state;
+    const index = activeIndex === slidesData.length - 1 ? 0 : activeIndex + 1
 
     this.setState({
       ...this.state,
-      activeIndex: activeIndex === slides.length - 1 ? 0 : activeIndex + 1,
+      activeIndex: index,
       transition: 0.5,
       translate: translate + this.getWidth()
     });
@@ -157,12 +155,12 @@ class Slider extends Component {
     const { activeIndex } = this.state;
     let images = [];
 
-    if (activeIndex === slides.length - 1) {
-      images = [slides[slides.length - 2], slides[slides.length - 1], slides[0]];
+    if (activeIndex === slidesData.length - 1) {
+      images = [slidesData[slidesData.length - 2], slidesData[slidesData.length - 1], slidesData[0]];
     } else if (activeIndex === 0) {
-      images = [slides[slides.length - 1], slides[0], slides[1]];
+      images = [slidesData[slidesData.length - 1], slidesData[0], slidesData[1]];
     } else {
-      images = slides.slice(activeIndex - 1, activeIndex + 2)
+      images = slidesData.slice(activeIndex - 1, activeIndex + 2)
     }
 
     this.setState({
@@ -191,4 +189,4 @@ class Slider extends Component {
   }
 }
 
-export default Slider;
+export default SliderClass;
