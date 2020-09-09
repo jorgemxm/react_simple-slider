@@ -1,5 +1,5 @@
 import React from 'react';
-import Slider from './Slider';
+import Slider from './SliderFunctional';
 import SliderClass from './SliderClass';
 
 import './App.css';
